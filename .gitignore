@@ -1,0 +1,7 @@
+.idea/*
+project.env
+camden_images/*
+split_aerial/*
+*.h5
+data_generation/.ipynb_checkpoints/*
+.DS_Store
