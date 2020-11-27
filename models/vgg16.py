@@ -110,7 +110,7 @@ def vgg16_weights(train_data_gen, val_data_gen, test_data_gen, num_classes=78, I
     for k in range(0, int(number_of_generator_calls)):
         train_labels.extend(np.array(train_data_gen[k][1]))
 
-    base = np.zeros(i)
+    base = np.zeros(num_classes)
     for label in train_labels:
         base = np.add(base, label)
 
