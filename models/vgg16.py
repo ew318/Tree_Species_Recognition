@@ -42,27 +42,14 @@ def vgg16_base(train_data_gen, val_data_gen, test_data_gen, num_classes=78, IMG_
 
 
 def vgg16_dropout(train_data_gen, val_data_gen, test_data_gen, num_classes=78, IMG_DIM=150, epochs=100, dropout=0.2):
-    model = VGG16(weights='imagenet', include_top=False, input_shape=(IMG_DIM, IMG_DIM, 3))
-    # check structure and layer names
-    model.summary()
-    # Store the fully connected layers
-    fc1 = model.layers[-3]
-    fc2 = model.layers[-2]
-    predictions = model.layers[-1]
-    # Create the dropout layers
-    dropout1 = Dropout(dropout)
-    dropout2 = Dropout(dropout)
-    # Reconnect the layers
-    x = dropout1(fc1.output)
-    x = fc2(x)
-    x = dropout2(x)
-    predictors = predictions(x)
-    # Create a new model
-    model2 = Model(model.input, predictors)
-    # Remove last dense layer for 1000 classes
-    model3 = Model(model2.inputs, model2.layers[-2].output)
-    output = Dense(num_classes, activation='softmax')(model3.layers[-1].output)
-    model = Model(model3.inputs, output)
+    vgg_model = VGG16(weights='imagenet', include_top=False, input_shape=(IMG_DIM, IMG_DIM, 3))
+    model = Sequential()
+    model.add(vgg_model)
+    model.add(Flatten())
+    model.add(Dropout(dropout))
+    model.add(Dense(256, activation='relu'))
+    model.add(Dropout(dropout))
+    model.add(Dense(num_classes, activation='softmax'))
 
     model.compile(loss='categorical_crossentropy', optimizer='adam', metrics=['accuracy'])
     model.summary()
@@ -85,7 +72,7 @@ def vgg16_dropout(train_data_gen, val_data_gen, test_data_gen, num_classes=78, I
     with open('vgg16_models/dropout' + str(int(100*dropout)) + '_evaluation_' + str(num_classes), 'wb') as file_pi:
         pickle.dump(scores, file_pi)
 
-    del scores, model, history
+    del scores, model, history, vgg_model
 
 
 def vgg16_weights(train_data_gen, val_data_gen, test_data_gen, num_classes=78, IMG_DIM=150, epochs=100, batch_size=64):
