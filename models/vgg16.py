@@ -114,7 +114,7 @@ def vgg16_weights(train_data_gen, val_data_gen, test_data_gen, num_classes=78, I
     labels_numerated = []
     for j in range(0, len(train_labels)):
         for k in range(0, num_classes):
-            if labels_numerated[j][k]:
+            if train_labels[j][k]:
                 labels_numerated.append(k)
 
     class_weights = class_weight.compute_class_weight('balanced', np.unique(labels_numerated), labels_numerated)
