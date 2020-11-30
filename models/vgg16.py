@@ -119,14 +119,14 @@ def vgg16_weights(train_data_gen, val_data_gen, test_data_gen, num_classes=78, I
 
     class_weights = class_weight.compute_class_weight('balanced', np.unique(labels_numerated), labels_numerated)
 
-    class_weight = {}
+    weights = {}
     for j in range(0, len(class_weights)):
-        class_weight[j] = class_weights[j]
+        weights[j] = class_weights[j]
 
     history = model.fit(
         train_data_gen,
         epochs=epochs,
-        validation_data=val_data_gen, class_weight=class_weight,
+        validation_data=val_data_gen, class_weight=weights,
         callbacks=callbacks)
 
     with open('vgg16_models/weights_history_' + str(num_classes), 'wb') as file_pi:
