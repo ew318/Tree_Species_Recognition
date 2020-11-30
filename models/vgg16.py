@@ -4,6 +4,7 @@ from tensorflow.keras.models import Sequential
 from tensorflow.keras.layers import Dense, Dropout, Flatten
 from tensorflow.keras.applications.vgg16 import VGG16
 from tensorflow.keras.models import Model
+from sklearn.utils import class_weight
 import math
 import numpy as np
 
@@ -110,13 +111,17 @@ def vgg16_weights(train_data_gen, val_data_gen, test_data_gen, num_classes=78, I
     for k in range(0, int(number_of_generator_calls)):
         train_labels.extend(np.array(train_data_gen[k][1]))
 
-    base = np.zeros(num_classes)
-    for label in train_labels:
-        base = np.add(base, label)
+    labels_numerated = []
+    for j in range(0, len(train_labels)):
+        for k in range(0, num_classes):
+            if labels_numerated[j][k]:
+                labels_numerated.append(k)
+
+    class_weights = class_weight.compute_class_weight('balanced', np.unique(labels_numerated), labels_numerated)
 
     class_weight = {}
-    for j in range(0, len(base)):
-        class_weight[j] = base[j] / num_examples
+    for j in range(0, len(class_weights)):
+        class_weight[j] = class_weights[j]
 
     history = model.fit(
         train_data_gen,

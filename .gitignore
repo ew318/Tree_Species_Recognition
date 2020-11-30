@@ -5,3 +5,5 @@ split_aerial/*
 *.h5
 data_generation/.ipynb_checkpoints/*
 .DS_Store
+
+*.csv
