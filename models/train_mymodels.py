@@ -23,7 +23,7 @@ i = 6
 num_classes, train_data_gen, val_data_gen, test_data_gen = data_generators(i, batch_size=batch_size, IMG_DIM=IMG_DIM)
 
 
-def fit_evaluate_model(model, result_folder, model_name):
+def fit_evaluate_model(model, result_folder, model_name, epochs=100):
     callbacks = [tf.keras.callbacks.EarlyStopping(monitor='val_loss', patience=10, restore_best_weights=True),
                  tf.keras.callbacks.ModelCheckpoint(
                      result_folder + '/' + model_name + '_' + str(num_classes), save_best_only=True, monitor='val_loss')]
@@ -75,15 +75,9 @@ optimizers = {
     'rmsprop': RMSprop()
 }
 
-dropout = {
-    '00': 0,
-    '10': 10,
-    '20': 20
-}
-
 initializers = [
     'constant', 'glorot_normal', 'glorot_uniform', 'he_normal', 'he_uniform', 'lecun_normal',
-    'lecun_uniform', 'random_normal', 'truncated_normal', 'ones'
+    'lecun_uniform', 'random_normal', 'truncated_normal'
 ]
 
 # Try lots of different small models, see what works best
@@ -102,14 +96,9 @@ fit_evaluate_model(mymodels.vgg3_opt_adam(IMG_DIM, num_classes), 'mymodel', 'vgg
 fit_evaluate_model(mymodels.vgg3_ki_none(IMG_DIM, num_classes), 'mymodel', 'vgg3_ki_none')
 
 # Generalise models, try with multiple paramater combinations.
-for d in dropout:
-    for initializer in initializers:
-        for optimizer in optimizers:
-            fit_evaluate_model(mymodelsconfig.vgg3(IMG_DIM, num_classes, optimizer, dropout[d], initializer),
-                               'mymodel_gen', 'vgg3_' + optimizer + '_' + d + '_' + initializer)
-            fit_evaluate_model(mymodelsconfig.vgg4(IMG_DIM, num_classes, optimizer, dropout[d], initializer),
-                               'mymodel_gen', 'vgg4_' + optimizer + '_' + d + '_' + initializer)
-            fit_evaluate_model(mymodelsconfig.vgg5(IMG_DIM, num_classes, optimizer, dropout[d], initializer),
-                               'mymodel_gen', 'vgg5_' + optimizer + '_' + d + '_' + initializer)
-            fit_evaluate_model(mymodelsconfig.vgg6(IMG_DIM, num_classes, optimizer, dropout[d], initializer),
-                               'mymodel_gen', 'vgg6_' + optimizer + '_' + d + '_' + initializer)
+for initializer in initializers:
+    for optimizer in optimizers:
+        fit_evaluate_model(mymodelsconfig.vgg5(IMG_DIM, num_classes, optimizer, initializer),
+                           'mymodel_gen', 'vgg5_' + optimizer + '_' + initializer)
+        fit_evaluate_model(mymodelsconfig.vgg6(IMG_DIM, num_classes, optimizer, initializer),
+                           'mymodel_gen', 'vgg6_' + optimizer + '_' + initializer)
