@@ -27,3 +27,23 @@ def collate_results(infolder):
 
 
 collate_results('/scratch/emiwat01/projects/final/Tree_Species_Recognition/mymodels/')
+
+
+def collate_kfold_results(infolder='kfold/'):
+    results = []
+    for subdir, dirs, files in os.walk(infolder):
+        results = files
+        break
+    data_dict = {'model_type': [],
+                 'accuracy': [],
+                 'recall': [],
+                 'precision': []
+                 }
+    for file in results:
+        evaluation = pickle.load(open(infolder + file, "rb"))
+        data_dict['model_type'].extend([file] * 10)
+        data_dict['accuracy'] += evaluation['accuracy']
+        data_dict['recall'] += evaluation['avg_recall']
+        data_dict['precision'] += evaluation['avg_precision']
+    summary_df = pd.DataFrame(data_dict, columns=['model_type', 'accuracy', 'recall', 'precision'])
+    return summary_df
