@@ -47,3 +47,23 @@ def collate_kfold_results(infolder='kfold/'):
         data_dict['precision'] += evaluation['avg_precision']
     summary_df = pd.DataFrame(data_dict, columns=['model_type', 'accuracy', 'recall', 'precision'])
     return summary_df
+
+
+def collate_all_classes_results(infolder='best_model/'):
+    results = []
+    for subdir, dirs, files in os.walk(infolder):
+        results = files
+        break
+    data_dict = {'model_type': [],
+                 'accuracy': [],
+                 'recall': [],
+                 'precision': []
+                 }
+    for file in results:
+        evaluation = pickle.load(open(infolder + file, "rb"))
+        data_dict['model_type'].append(file)
+        data_dict['accuracy'].append(evaluation['accuracy'])
+        data_dict['recall'].append(evaluation['avg_recall'])
+        data_dict['precision'].append(evaluation['avg_precision'])
+    summary_df = pd.DataFrame(data_dict, columns=['model_type', 'accuracy', 'recall', 'precision'])
+    return summary_df
